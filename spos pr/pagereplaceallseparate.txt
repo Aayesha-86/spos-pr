@@ -1,0 +1,105 @@
+from collections import deque
+
+def fifo_page_replacement(pages, capacity):
+    page_queue = deque(maxlen=capacity)
+    page_faults = 0
+    print("\n--- FIFO PAGE REPLACEMENT ---")
+
+    for page in pages:
+        if page not in page_queue:
+            print(f"Page {page} loaded into memory.")
+            page_queue.append(page)
+            page_faults += 1
+        else:
+            print(f"Page {page} already in memory.")
+
+    print(f"\nTotal Page Faults (Misses): {page_faults}")
+    print(f"Final Pages in Memory: {list(page_queue)}")
+
+
+# Main Program
+if __name__ == "__main__":
+    n = int(input("Enter number of pages: "))
+    pages = [int(input(f"Enter page {i+1}: ")) for i in range(n)]
+    capacity = int(input("Enter number of frames in memory: "))
+
+    fifo_page_replacement(pages, capacity)
+
+
+from collections import OrderedDict
+
+class LRUCache:
+    def __init__(self, capacity):
+        self.cache = OrderedDict()
+        self.capacity = capacity
+
+    def refer(self, page):
+        if page in self.cache:
+            self.cache.move_to_end(page)
+        else:
+            if len(self.cache) >= self.capacity:
+                self.cache.popitem(last=False)
+            self.cache[page] = None
+
+def lru_page_replacement(pages, capacity):
+    lru_cache = LRUCache(capacity)
+    page_faults = 0
+    print("\n--- LRU PAGE REPLACEMENT ---")
+
+    for page in pages:
+        if page not in lru_cache.cache:
+            print(f"Page {page} loaded into memory.")
+            page_faults += 1
+        else:
+            print(f"Page {page} already in memory.")
+        lru_cache.refer(page)
+
+    print(f"\nTotal Page Faults: {page_faults}")
+    print(f"Final Pages in Memory: {list(lru_cache.cache.keys())}")
+
+
+# Main Program
+if __name__ == "__main__":
+    n = int(input("Enter number of pages: "))
+    pages = [int(input(f"Enter page {i+1}: ")) for i in range(n)]
+    capacity = int(input("Enter number of frames in memory: "))
+
+    lru_page_replacement(pages, capacity)
+
+
+
+def optimal_page_replacement(pages, capacity):
+    page_frames = [-1] * capacity
+    page_faults = 0
+    print("\n--- OPTIMAL PAGE REPLACEMENT ---")
+
+    for i in range(len(pages)):
+        if pages[i] not in page_frames:
+            if -1 in page_frames:
+                index = page_frames.index(-1)
+                page_frames[index] = pages[i]
+            else:
+                future_occurrences = {page: float('inf') for page in page_frames}
+                for j in range(i + 1, len(pages)):
+                    if pages[j] in future_occurrences and future_occurrences[pages[j]] == float('inf'):
+                        future_occurrences[pages[j]] = j
+                page_to_replace = max(future_occurrences, key=future_occurrences.get)
+                index = page_frames.index(page_to_replace)
+                page_frames[index] = pages[i]
+
+            print(f"Page {pages[i]} loaded into memory.")
+            page_faults += 1
+        else:
+            print(f"Page {pages[i]} already in memory.")
+
+    print(f"\nTotal Page Faults: {page_faults}")
+    print(f"Final Pages in Memory: {page_frames}")
+
+
+# Main Program
+if __name__ == "__main__":
+    n = int(input("Enter number of pages: "))
+    pages = [int(input(f"Enter page {i+1}: ")) for i in range(n)]
+    capacity = int(input("Enter number of frames in memory: "))
+
+    optimal_page_replacement(pages, capacity)

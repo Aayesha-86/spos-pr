@@ -1,0 +1,195 @@
+# FCFS (First Come First Serve) Scheduling Algorithm
+
+def findWaitingTime(processes, n, bt, wt):
+    wt[0] = 0  # Waiting time for the first process is 0
+    for i in range(1, n):
+        wt[i] = bt[i - 1] + wt[i - 1]  # Waiting time = sum of previous burst times
+
+
+def findTurnAroundTime(processes, n, bt, wt, tat):
+    for i in range(n):
+        tat[i] = bt[i] + wt[i]  # Turnaround time = Burst Time + Waiting Time
+
+
+def findavgTime(processes, n, bt):
+    wt = [0] * n  # Waiting times
+    tat = [0] * n  # Turnaround times
+
+    findWaitingTime(processes, n, bt, wt)
+    findTurnAroundTime(processes, n, bt, wt, tat)
+
+    print("\n--------------------------------------------")
+    print("Process\tBurst Time\tWaiting Time\tTurnaround Time")
+    print("--------------------------------------------")
+
+    total_wt = 0
+    total_tat = 0
+
+    for i in range(n):
+        total_wt += wt[i]
+        total_tat += tat[i]
+        print(f"P{processes[i]}\t{bt[i]}\t\t{wt[i]}\t\t{tat[i]}")
+
+    avg_wt = total_wt / n
+    avg_tat = total_tat / n
+
+    print("--------------------------------------------")
+    print(f"Average Waiting Time = {avg_wt:.2f}")
+    print(f"Average Turnaround Time = {avg_tat:.2f}")
+    print("--------------------------------------------")
+
+
+# ---------- MAIN ----------
+n = int(input("Enter number of processes: "))
+processes = [i + 1 for i in range(n)]
+bt = []
+
+for i in range(n):
+    b = int(input(f"Enter Burst Time for Process {i + 1}: "))
+    bt.append(b)
+
+findavgTime(processes, n, bt)
+
+
+
+# SJF (Shortest Job First) Scheduling Algorithm
+
+def main():
+    n = int(input("Enter number of processes: "))
+    A = [[0 for _ in range(4)] for _ in range(n)]
+
+    print("Enter Burst Time for each process:")
+    for i in range(n):
+        A[i][1] = int(input(f"P{i + 1}: "))
+        A[i][0] = i + 1  # Process ID
+
+    # Sorting by Burst Time
+    A.sort(key=lambda x: x[1])
+
+    total_wt = 0
+    A[0][2] = 0  # Waiting Time for first process
+
+    for i in range(1, n):
+        A[i][2] = sum(A[j][1] for j in range(i))
+        total_wt += A[i][2]
+
+    avg_wt = total_wt / n
+    total_tat = 0
+
+    print("\nProcess\tBT\tWT\tTAT")
+
+    for i in range(n):
+        A[i][3] = A[i][1] + A[i][2]
+        total_tat += A[i][3]
+        print(f"P{A[i][0]}\t{A[i][1]}\t{A[i][2]}\t{A[i][3]}")
+
+    avg_tat = total_tat / n
+
+    print("\nAverage Waiting Time =", round(avg_wt, 2))
+    print("Average Turnaround Time =", round(avg_tat, 2))
+
+
+# ---------- MAIN ----------
+main()
+
+
+
+ PRIORITY Scheduling Algorithm
+
+def main():
+    n = int(input("Enter number of processes: "))
+
+    p, pp, bt, w, t = [0]*n, [0]*n, [0]*n, [0]*n, [0]*n
+
+    print("Enter Burst Time and Priority for each process:")
+    for i in range(n):
+        bt[i] = int(input(f"Process {i+1} Burst Time: "))
+        pp[i] = int(input(f"Process {i+1} Priority: "))
+        p[i] = i + 1
+
+    # Sort by priority (Higher number = higher priority)
+    for i in range(n - 1):
+        for j in range(i + 1, n):
+            if pp[i] < pp[j]:
+                pp[i], pp[j] = pp[j], pp[i]
+                bt[i], bt[j] = bt[j], bt[i]
+                p[i], p[j] = p[j], p[i]
+
+    w[0] = 0
+    t[0] = bt[0]
+    awt, atat = 0, t[0]
+
+    for i in range(1, n):
+        w[i] = t[i - 1]
+        awt += w[i]
+        t[i] = w[i] + bt[i]
+        atat += t[i]
+
+    print("\nProcess\tBurst Time\tWait Time\tTAT\tPriority")
+    for i in range(n):
+        print(f"{p[i]}\t\t{bt[i]}\t\t{w[i]}\t\t{t[i]}\t\t{pp[i]}")
+
+    print("\nAverage Waiting Time =", awt / n)
+    print("Average Turnaround Time =", atat / n)
+
+
+if __name__ == "__main__":
+    main()
+
+
+
+# RR (Round Robin) Scheduling Algorithm
+
+def findWaitingTime(processes, n, bt, wt, quantum):
+    rem_bt = bt.copy()
+    t = 0  # Current time
+
+    while True:
+        done = True
+        for i in range(n):
+            if rem_bt[i] > 0:
+                done = False
+
+                if rem_bt[i] > quantum:
+                    t += quantum
+                    rem_bt[i] -= quantum
+                else:
+                    t += rem_bt[i]
+                    wt[i] = t - bt[i]
+                    rem_bt[i] = 0
+
+        if done:
+            break
+
+
+def findTurnAroundTime(processes, n, bt, wt, tat):
+    for i in range(n):
+        tat[i] = bt[i] + wt[i]
+
+
+def findavgTime(processes, n, bt, quantum):
+    wt = [0] * n
+    tat = [0] * n
+
+    findWaitingTime(processes, n, bt, wt, quantum)
+    findTurnAroundTime(processes, n, bt, wt, tat)
+
+    print("\nProcess\tBurst Time\tWaiting Time\tTurnaround Time")
+
+    total_wt, total_tat = 0, 0
+    for i in range(n):
+        total_wt += wt[i]
+        total_tat += tat[i]
+        print(f"{processes[i]}\t{bt[i]}\t\t{wt[i]}\t\t{tat[i]}")
+
+    print("\nAverage Waiting Time =", total_wt / n)
+    print("Average Turnaround Time =", total_tat / n)
+
+
+# ---------- MAIN ----------
+n = int(input("Enter number of processes: "))
+processes = [i + 1 for i in range(n)]
+bt = [int(input(f"Enter Burst Time for Process {i + 1}: ")) for i in range(n)]
+quantum = int(input("Enter Time Quantum: "))
+
+findavgTime(processes, n, bt, quantum)

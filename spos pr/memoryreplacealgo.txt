@@ -1,0 +1,107 @@
+# -------- FIRST FIT --------
+def first_fit(blocks, processes):
+    allocation = [-1] * len(processes)
+
+    for i in range(len(processes)):
+        for j in range(len(blocks)):
+            if blocks[j] >= processes[i]:
+                allocation[i] = j
+                blocks[j] -= processes[i]
+                break
+
+    print("\n--- FIRST FIT MEMORY ALLOCATION RESULT ---")
+    print(f"{'Process No.':<12}{'Process Size':<15}{'Block No.'}")
+    print("-" * 40)
+    for i in range(len(processes)):
+        if allocation[i] != -1:
+            print(f"{i+1:<12}{processes[i]:<15}{allocation[i]+1}")
+        else:
+            print(f"{i+1:<12}{processes[i]:<15}Not Allocated")
+
+
+# -------- BEST FIT --------
+def best_fit(blocks, processes):
+    allocation = [-1] * len(processes)
+
+    for i in range(len(processes)):
+        best_idx = -1
+        for j in range(len(blocks)):
+            if blocks[j] >= processes[i]:
+                if best_idx == -1 or blocks[j] < blocks[best_idx]:
+                    best_idx = j
+        if best_idx != -1:
+            allocation[i] = best_idx
+            blocks[best_idx] -= processes[i]
+
+    print("\n--- BEST FIT MEMORY ALLOCATION RESULT ---")
+    print(f"{'Process No.':<12}{'Process Size':<15}{'Block No.'}")
+    print("-" * 40)
+    for i in range(len(processes)):
+        if allocation[i] != -1:
+            print(f"{i+1:<12}{processes[i]:<15}{allocation[i]+1}")
+        else:
+            print(f"{i+1:<12}{processes[i]:<15}Not Allocated")
+
+
+# -------- WORST FIT --------
+def worst_fit(blocks, processes):
+    allocation = [-1] * len(processes)
+
+    for i in range(len(processes)):
+        worst_idx = -1
+        for j in range(len(blocks)):
+            if blocks[j] >= processes[i]:
+                if worst_idx == -1 or blocks[j] > blocks[worst_idx]:
+                    worst_idx = j
+        if worst_idx != -1:
+            allocation[i] = worst_idx
+            blocks[worst_idx] -= processes[i]
+
+    print("\n--- WORST FIT MEMORY ALLOCATION RESULT ---")
+    print(f"{'Process No.':<12}{'Process Size':<15}{'Block No.'}")
+    print("-" * 40)
+    for i in range(len(processes)):
+        if allocation[i] != -1:
+            print(f"{i+1:<12}{processes[i]:<15}{allocation[i]+1}")
+        else:
+            print(f"{i+1:<12}{processes[i]:<15}Not Allocated")
+
+
+# ------------------- MAIN PROGRAM -------------------
+print("=== MEMORY ALLOCATION STRATEGIES ===\n")
+
+# Take memory block details
+m = int(input("Enter number of memory blocks: "))
+blocks = []
+for i in range(m):
+    size = int(input(f"Enter size of Block {i+1}: "))
+    blocks.append(size)
+
+# Take process details
+n = int(input("\nEnter number of processes: "))
+processes = []
+for i in range(n):
+    size = int(input(f"Enter size of Process {i+1}: "))
+    processes.append(size)
+
+# Menu-driven choice
+while True:
+    print("\n--- MENU ---")
+    print("1. First Fit")
+    print("2. Best Fit")
+    print("3. Worst Fit")
+    print("4. Exit")
+
+    choice = int(input("Enter your choice: "))
+
+    if choice == 1:
+        first_fit(blocks.copy(), processes)
+    elif choice == 2:
+        best_fit(blocks.copy(), processes)
+    elif choice == 3:
+        worst_fit(blocks.copy(), processes)
+    elif choice == 4:
+        print("\nExiting... Thank you!")
+        break
+    else:
+        print("Invalid choice! Please try again.")
